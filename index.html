@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aliman AI - Fokus Yordamchingiz</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ==========================================
+     AUTH SAHIFASI (Login / Register)
+     ========================================== -->
+<div id="auth-page" class="auth-container">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <div class="logo-icon">🎯</div>
+            <h1>Aliman <span class="blue">AI</span></h1>
+            <p>Fokuslanish, o'sish, muvaffaqiyat</p>
+        </div>
+
+        <!-- Tab tugmalari -->
+        <div class="auth-tabs">
+            <button class="tab-btn active" onclick="switchTab('login')">Kirish</button>
+            <button class="tab-btn" onclick="switchTab('register')">Ro'yxatdan o'tish</button>
+        </div>
+
+        <!-- Login formasi -->
+        <div id="login-form" class="auth-form">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="login-username" placeholder="username" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label>Parol</label>
+                <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+            </div>
+            <button class="btn-primary" onclick="login()">Kirish →</button>
+            <div id="login-error" class="error-msg"></div>
+        </div>
+
+        <!-- Register formasi -->
+        <div id="register-form" class="auth-form hidden">
+            <div class="form-group">
+                <label>Username (kamida 3 belgi)</label>
+                <input type="text" id="reg-username" placeholder="username" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label>Parol (kamida 6 belgi)</label>
+                <input type="password" id="reg-password" placeholder="••••••••" autocomplete="new-password">
+            </div>
+            <button class="btn-primary" onclick="register()">Ro'yxatdan o'tish →</button>
+            <div id="reg-error" class="error-msg"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================
+     ASOSIY ILOVA (Login bo'lgandan keyin)
+     ========================================== -->
+<div id="app" class="app-container hidden">
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <span>🎯</span>
+            <span class="logo-text">Aliman AI</span>
+        </div>
+        
+        <div class="sidebar-menu">
+            <button class="nav-item active" onclick="showSection('dashboard')" data-section="dashboard">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Dashboard</span>
+            </button>
+            <button class="nav-item" onclick="showSection('chat')" data-section="chat">
+                <span class="nav-icon">💬</span>
+                <span class="nav-text">Chat</span>
+            </button>
+            <button class="nav-item" onclick="showSection('plan')" data-section="plan">
+                <span class="nav-icon">📋</span>
+                <span class="nav-text">Reja</span>
+            </button>
+            <button class="nav-item" onclick="showSection('review')" data-section="review">
+                <span class="nav-icon">📈</span>
+                <span class="nav-text">Tahlil</span>
+            </button>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="user-info" id="user-display">
+                <span class="user-avatar">👤</span>
+                <span class="user-name">Foydalanuvchi</span>
+            </div>
+            <button class="nav-item logout-btn" onclick="logout()">
+                <span class="nav-icon">🚪</span>
+                <span class="nav-text">Chiqish</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Asosiy kontent -->
+    <main class="main-content">
+
+        <!-- ---- DASHBOARD ---- -->
+        <section id="section-dashboard" class="section active">
+            <div class="section-header">
+                <h2>Bugungi Dashboard</h2>
+                <div class="stats-bar" id="today-stats">
+                    <span>⏱ <b id="stat-minutes">0</b> daqiqa</span>
+                    <span>🎯 <b id="stat-sessions">0</b> sessiya</span>
+                    <span>⚠️ <b id="stat-distractions">0</b> chalg'ish</span>
+                </div>
+            </div>
+
+            <!-- AI Savoli -->
+            <div class="ai-question-card">
+                <div class="ai-avatar">🤖</div>
+                <div class="ai-question-text" id="ai-question">Yuklanmoqda...</div>
+            </div>
+
+            <!-- Reja yozish qisqacha -->
+            <div class="quick-plan-card">
+                <h3>📝 Tez reja qo'shish</h3>
+                <div class="quick-plan-input">
+                    <input type="text" id="quick-plan-input" placeholder="Bugun nima qilmoqchisan?" 
+                           onkeypress="if(event.key==='Enter') quickAddPlan()">
+                    <button onclick="quickAddPlan()" class="btn-add">+</button>
+                </div>
+                <div id="plans-list" class="plans-list">
+                    <!-- Rejalar bu yerga yuklanadi -->
+                </div>
+            </div>
+
+            <!-- Focus Mode Tugmasi -->
+            <div class="focus-starter">
+                <h3>🎯 Focus Mode</h3>
+                <p>Diqqatingni to'la vazifaga qaratish uchun Focus Mode'ni yoq</p>
+                <div class="focus-time-select">
+                    <button class="time-btn active" onclick="selectTime(25, this)">25 min</button>
+                    <button class="time-btn" onclick="selectTime(45, this)">45 min</button>
+                    <button class="time-btn" onclick="selectTime(60, this)">60 min</button>
+                    <button class="time-btn" onclick="selectTime(90, this)">90 min</button>
+                </div>
+                <button class="btn-focus" onclick="startFocusMode()">
+                    🚀 Focus Mode Boshlash
+                </button>
+            </div>
+        </section>
+
+        <!-- ---- CHAT ---- -->
+        <section id="section-chat" class="section hidden">
+            <div class="section-header">
+                <h2>💬 AI bilan Suhbat</h2>
+                <p class="section-subtitle">Maqsadlaring, rejalar va motivatsiya haqida gaplash</p>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Chat xabarlari bu yerga chiqadi -->
+                    <div class="chat-message assistant">
+                        <div class="msg-avatar">🤖</div>
+                        <div class="msg-content">
+                            Salom! Men Aliman AI - fokuslanishga yordam beruvchi yordamchingizman. 
+                            Bugun nima haqida gaplashamiz? 😊
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Xabar yozing..." 
+                           onkeypress="if(event.key==='Enter') sendChatMessage()">
+                    <button onclick="sendChatMessage()" class="btn-send">→</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ---- REJA ---- -->
+        <section id="section-plan" class="section hidden">
+            <div class="section-header">
+                <h2>📋 Kunlik Reja</h2>
+                <p class="section-subtitle">Bugungi maqsadlaringni belgilab ol</p>
+            </div>
+
+            <div class="plan-container">
+                <div class="plan-add-form">
+                    <textarea id="plan-textarea" placeholder="Bugungi vazifangni batafsil yozing...
+Misol: Matematikadan 3-bob mashqlarini bajarish (2 soat)" rows="3"></textarea>
+                    <button onclick="addPlan()" class="btn-primary">✅ Reja Qo'shish</button>
+                </div>
+
+                <div class="plans-full-list" id="plans-full-list">
+                    <!-- To'liq rejalar ro'yxati -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ---- KUN YAKUNI ---- -->
+        <section id="section-review" class="section hidden">
+            <div class="section-header">
+                <h2>📈 Kun Yakuni Tahlili</h2>
+                <p class="section-subtitle">AI sizning bugungi samaradorligingizni tahlil qiladi</p>
+            </div>
+
+            <div class="review-container">
+                <button onclick="loadReview()" class="btn-primary">🔄 Tahlilni yangilash</button>
+                <div id="review-content" class="review-card">
+                    <p>Tahlilni ko'rish uchun tugmani bosing...</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ==========================================
+     FOCUS MODE (Fullscreen overlay)
+     ========================================== -->
+<div id="focus-overlay" class="focus-overlay hidden">
+    <div class="focus-header">
+        <div class="focus-status">
+            🔒 FOKUS REJIMI FAOL
+        </div>
+        <div class="focus-warning-badge">
+            ⚠️ YouTube Shorts, Instagram Reels va boshqa chalg'ituvchi kontent hozir band!
+        </div>
+    </div>
+
+    <div class="focus-main">
+        <!-- Taymer -->
+        <div class="focus-timer" id="focus-timer">
+            <div class="timer-circle">
+                <div class="timer-display" id="timer-display">25:00</div>
+                <div class="timer-label">qolgan vaqt</div>
+            </div>
+        </div>
+
+        <!-- Rag'batlantiruvchi gap -->
+        <div class="focus-quote" id="focus-quote">
+            "Har bir buyuk natija - kichik, izchil harakatlar yig'indisi."
+        </div>
+
+        <!-- Fokus vaqtidagi chat -->
+        <div class="focus-chat">
+            <input type="text" id="focus-chat-input" placeholder="AI bilan gaplash (faqat fokus haqida)..."
+                   onkeypress="if(event.key==='Enter') sendFocusChat()">
+            <button onclick="sendFocusChat()">→</button>
+        </div>
+        <div id="focus-ai-response" class="focus-ai-response hidden"></div>
+
+        <!-- Tugmalar -->
+        <div class="focus-actions">
+            <button class="btn-danger" onclick="exitFocusConfirm()">
+                ⚠️ Fokusdan Chiqish
+            </button>
+        </div>
+    </div>
+
+    <!-- Bajarildi -->
+    <div id="focus-complete" class="focus-complete hidden">
+        <div class="complete-icon">🏆</div>
+        <h2>Ajoyib! Fokus sessiyasi tugadi!</h2>
+        <p id="complete-message">Zo'r ish qilding!</p>
+        <button class="btn-primary" onclick="closeFocusMode()">Dashboard'ga Qaytish</button>
+    </div>
+</div>
+
+<!-- ==========================================
+     FOKUSDAN CHIQISH MODALI
+     ========================================== -->
+<div id="exit-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div class="modal-icon">⚠️</div>
+        <h3>Fokusdan chiqmoqchimisiz?</h3>
+        <p>Nima sababdan chiqmoqchisiz? AI sizga javob beradi.</p>
+        <textarea id="exit-reason" placeholder="Sabab: zerikdim, suv ichish kerak, ota-onam chaqirdi..."
+                  rows="3"></textarea>
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="closeExitModal()">Yo'q, davom etaman 💪</button>
+            <button class="btn-danger" onclick="confirmExit()">Ha, chiqaman</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================
+     AI TANBEH MODALI (Chalg'iganlar uchun)
+     ========================================== -->
+<div id="ai-warning-modal" class="modal-overlay hidden">
+    <div class="modal-card warning-modal">
+        <div class="modal-icon">🤖</div>
+        <h3>AI Yordamchi</h3>
+        <div id="ai-warning-text" class="ai-warning-text"></div>
+        <div class="modal-actions">
+            <button class="btn-primary" onclick="returnToFocus()">💪 Fokusga Qaytish</button>
+            <button class="btn-secondary small" onclick="closeFocusMode()">Bugun uchun to'xtatish</button>
+        </div>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
